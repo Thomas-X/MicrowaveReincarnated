@@ -30,7 +30,7 @@ namespace MicrwaveReincarnatedTests
         };
         
         /// <summary>
-        /// 
+        /// Checks if the message and right events are triggered 
         /// </summary>
         [Fact]
         public void Should_Handle_IsOpen_Correctly()
@@ -41,6 +41,7 @@ namespace MicrwaveReincarnatedTests
             };
             var timesCalled = 0;
 
+            // Event handler checkers
             StateEngine.OpenDoor += (sender, args) =>
             {
                 timesCalled++;
@@ -55,6 +56,9 @@ namespace MicrwaveReincarnatedTests
             Assert.Equal(2, timesCalled);
         }
         
+        /// <summary>
+        /// Checks if the message and right events are triggered, but also checks if the current state of the state engine is correct.
+        /// </summary>
         [Fact]
         public void Should_Handle_Closed_Door_Higher_Time_Than_0()
         {
@@ -65,6 +69,7 @@ namespace MicrwaveReincarnatedTests
             };
             var timesCalled = 0;
 
+            // Event handler checkers
             StateEngine.SetReady += (sender, args) =>
             {
                 timesCalled++;
@@ -80,6 +85,9 @@ namespace MicrwaveReincarnatedTests
             Assert.Equal(StateEngine.State.Ready, StateEngine.CurrentState);
         }
         
+        /// <summary>
+        /// Checks if the message and right events are triggered 
+        /// </summary>
         [Fact]
         public void Should_Not_Start_When_Door_Is_Open()
         {
@@ -91,6 +99,7 @@ namespace MicrwaveReincarnatedTests
             };
             var timesCalled = 0;
 
+            // Event handler checker
             StateEngine.ShowMessage += (sender, args) =>
             {
                 if (args == _messages[EventMessages.Should_Not_Start_When_Door_Is_Open]) timesCalled++;
