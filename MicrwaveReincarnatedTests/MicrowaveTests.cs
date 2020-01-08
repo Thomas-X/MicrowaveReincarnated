@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microwave;
 using Xunit;
 using Microwave.Models;
+using Moq;
 
 namespace MicrwaveReincarnatedTests
 {
@@ -28,40 +29,53 @@ namespace MicrwaveReincarnatedTests
             {EventMessages.Should_Handle_Door_Open, "Door is open"},
             {EventMessages.Should_Not_Start_When_Door_Is_Open, "Can not start when the door is open"}
         };
-        
+
+        private Mock<IStateEngineWrapper> _stateEngineWrapperMock;
+
+        public MicrowaveTests()
+        {
+            _stateEngineWrapperMock = new Mock<IStateEngineWrapper>();
+        }
+
         /// <summary>
         /// Checks if the message and right events are triggered 
         /// </summary>
         [Fact]
         public void Should_Handle_IsOpen_Correctly()
         {
+            // Arrange
+            var timesCalled = 0;
+
+            _stateEngineWrapperMock.Setup(m => m.ShowMessage(It.IsAny<object>(), It.IsAny<string>()))
+                .Callback<object, string>((sender, args) =>
+                {
+                    if (args == _messages[EventMessages.Should_Handle_Door_Open]) timesCalled++;
+                });
+            _stateEngineWrapperMock.Setup(m => m.OpenDoor(It.IsAny<object>(), It.IsAny<object>()))
+                .Callback<object, object>((sender, args) => { timesCalled++; });
+
             var microwaveData = new MicrowaveData
             {
                 IsOpen = true
             };
-            var timesCalled = 0;
 
-            // Event handler checkers
-            StateEngine.OpenDoor += (sender, args) =>
-            {
-                timesCalled++;
-            };
-            StateEngine.ShowMessage += (sender, args) =>
-            {
-                if (args == _messages[EventMessages.Should_Handle_Door_Open]) timesCalled++;
-            };
+            StateEngine.OpenDoor += _stateEngineWrapperMock.Object.OpenDoor;
+            StateEngine.ShowMessage += _stateEngineWrapperMock.Object.ShowMessage;
 
+            // Act
             StateEngine.MicrowaveEngine(microwaveData);
 
+            // Assert
             Assert.Equal(2, timesCalled);
         }
-        
+
         /// <summary>
         /// Checks if the message and right events are triggered, but also checks if the current state of the state engine is correct.
         /// </summary>
         [Fact]
         public void Should_Handle_Closed_Door_Higher_Time_Than_0()
         {
+            // Arrange
             var microwaveData = new MicrowaveData
             {
                 IsOpen = false,
@@ -69,28 +83,29 @@ namespace MicrwaveReincarnatedTests
             };
             var timesCalled = 0;
 
-            // Event handler checkers
-            StateEngine.SetReady += (sender, args) =>
-            {
-                timesCalled++;
-            };
-            StateEngine.SetLightReady += (sender, args) =>
-            {
-                timesCalled++;
-            };
+            _stateEngineWrapperMock.Setup(m => m.SetReady(It.IsAny<object>(), It.IsAny<object>()))
+                .Callback<object, object>((sender, args) => { timesCalled++; });
+            _stateEngineWrapperMock.Setup(m => m.SetLightReady(It.IsAny<object>(), It.IsAny<object>()))
+                .Callback<object, object>((sender, args) => { timesCalled++; });
 
+            StateEngine.SetReady += _stateEngineWrapperMock.Object.SetReady;
+            StateEngine.SetLightReady += _stateEngineWrapperMock.Object.SetLightReady;
+            
+            // Act
             StateEngine.MicrowaveEngine(microwaveData);
 
+            // Assert
             Assert.Equal(2, timesCalled);
             Assert.Equal(StateEngine.State.Ready, StateEngine.CurrentState);
         }
-        
+
         /// <summary>
         /// Checks if the message and right events are triggered 
         /// </summary>
         [Fact]
         public void Should_Not_Start_When_Door_Is_Open()
         {
+            // Arrange
             var microwaveData = new MicrowaveData
             {
                 IsOpen = false,
@@ -99,16 +114,19 @@ namespace MicrwaveReincarnatedTests
             };
             var timesCalled = 0;
 
-            // Event handler checker
-            StateEngine.ShowMessage += (sender, args) =>
-            {
-                if (args == _messages[EventMessages.Should_Not_Start_When_Door_Is_Open]) timesCalled++;
-            };
+            _stateEngineWrapperMock.Setup(m => m.ShowMessage(It.IsAny<object>(), It.IsAny<string>()))
+                .Callback<object, string>((sender, args) =>
+                {
+                    if (args == _messages[EventMessages.Should_Not_Start_When_Door_Is_Open]) timesCalled++;
+                });
 
+            StateEngine.ShowMessage += _stateEngineWrapperMock.Object.ShowMessage;
+            
+            // Act
             StateEngine.MicrowaveEngine(microwaveData);
 
+            // Assert
             Assert.Equal(1, timesCalled);
         }
-        
     }
 }
