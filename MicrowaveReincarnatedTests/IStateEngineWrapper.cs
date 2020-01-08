@@ -1,4 +1,4 @@
-﻿namespace MicrwaveReincarnatedTests
+﻿namespace MicrowaveReincarnatedTests
 {
     public interface IStateEngineWrapper
     {

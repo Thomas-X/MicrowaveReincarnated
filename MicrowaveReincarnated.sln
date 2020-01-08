@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrowaveReincarnated", "MicrowaveReincarnated\MicrowaveReincarnated.csproj", "{D9C5FD56-EDE6-4628-AB85-34B15A690F0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrwaveReincarnatedTests", "MicrwaveReincarnatedTests\MicrwaveReincarnatedTests.csproj", "{0EB1D894-AD79-45F8-BA15-D9CC9A958A5B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrowaveReincarnatedTests", "MicrowaveReincarnatedTests\MicrowaveReincarnatedTests.csproj", "{0EB1D894-AD79-45F8-BA15-D9CC9A958A5B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D9C5FD56-EDE6-4628-AB85-34B15A690F0C} = {D9C5FD56-EDE6-4628-AB85-34B15A690F0C}
 	EndProjectSection

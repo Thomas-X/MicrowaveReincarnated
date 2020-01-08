@@ -8,7 +8,7 @@ using Xunit;
 using Microwave.Models;
 using Moq;
 
-namespace MicrwaveReincarnatedTests
+namespace MicrowaveReincarnatedTests
 {
     /// <summary>
     /// Holds all tests for the StateEngine of the Microwave.
